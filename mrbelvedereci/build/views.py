@@ -5,12 +5,18 @@ from django.http import HttpResponseRedirect
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404
 from ansi2html import Ansi2HTMLConverter
+from rest_framework import generics
 
 from mrbelvedereci.build.models import Build
 from mrbelvedereci.build.models import Rebuild
 from mrbelvedereci.build.tasks import run_build
 from mrbelvedereci.build.utils import view_queryset
+from serializers import BuildSerializer
 from watson import search as watson
+
+class ApiBuildDetail(generics.RetrieveAPIView):
+    queryset = Build.objects.all()
+    serializer_class = BuildSerializer
 
 def build_list(request):
     builds = view_queryset(request)

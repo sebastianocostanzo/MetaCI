@@ -3,6 +3,9 @@
 # Bleeding edge Django
 django==1.10.3
 
+# Django REST Framework
+djangorestframework==3.6.3
+
 # Configuration
 django-environ==0.4.1
 whitenoise==3.2.2

@@ -1,5 +1,7 @@
 from django.conf.urls import url
-from mrbelvedereci.build import views
+
+import views
+
 
 urlpatterns = [
     url(
@@ -36,5 +38,10 @@ urlpatterns = [
         r'^/(?P<build_id>\d+)$',
         views.build_detail,
         name='build_detail',
+    ),
+    url(
+        r'^/api/(?P<pk>\d+)$',
+        views.ApiBuildDetail.as_view(),
+        name='ApiBuildDetail',
     ),
 ]

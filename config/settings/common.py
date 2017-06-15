@@ -46,6 +46,7 @@ THIRD_PARTY_APPS = (
     'django_rq_wrapper',
     'django_slds',  # Salesforce Lightning Design System
     'django_slds_crispyforms',  # SLDS theme for crispyforms
+    'rest_framework', # REST API
     'watson', # Full text search
 )
 
