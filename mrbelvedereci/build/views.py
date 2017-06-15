@@ -14,16 +14,19 @@ from mrbelvedereci.build.utils import view_queryset
 from serializers import BuildSerializer
 from watson import search as watson
 
+
 class ApiBuildDetail(generics.RetrieveAPIView):
     queryset = Build.objects.all()
     serializer_class = BuildSerializer
+
 
 def build_list(request):
     builds = view_queryset(request)
     return render(request, 'build/build_list.html', context={'builds': builds})
 
+
 def build_detail(request, build_id, rebuild_id=None, tab=None):
-    build = get_object_or_404(Build, id = build_id)
+    build = get_object_or_404(Build, id=build_id)
     rebuild = None
 
     if not request.user.is_staff:
@@ -39,9 +42,9 @@ def build_detail(request, build_id, rebuild_id=None, tab=None):
             flows = build.flows
     else:
         if rebuild_id == 'original':
-            flows = build.flows.filter(rebuild__isnull = True)
+            flows = build.flows.filter(rebuild__isnull=True)
         else:
-            rebuild = get_object_or_404(Rebuild, build_id = build.id, id=rebuild_id)
+            rebuild = get_object_or_404(Rebuild, build_id=build.id, id=rebuild_id)
             flows = rebuild.flows
 
     flows = flows.order_by('time_queue')
@@ -60,8 +63,8 @@ def build_detail(request, build_id, rebuild_id=None, tab=None):
             tests['pass'] += flow.tests_pass
         if flow.tests_fail:
             tests['fail'] += flow.tests_fail
-            tests['failed_tests'].extend(list(flow.test_results.filter(outcome__in = ['Fail','CompileFail'])))
-    
+            tests['failed_tests'].extend(list(flow.test_results.filter(outcome__in=['Fail', 'CompileFail'])))
+
     context = {
         'build': build,
         'rebuild': rebuild,
@@ -82,27 +85,29 @@ def build_detail(request, build_id, rebuild_id=None, tab=None):
     elif tab == 'org':
         return render(request, 'build/detail_org.html', context=context)
 
+
 def build_rebuild(request, build_id):
-    build = get_object_or_404(Build, id = build_id)
+    build = get_object_or_404(Build, id=build_id)
 
     if not request.user.is_staff:
         return HttpResponseForbidden('You are not authorized to rebuild builds')
 
     rebuild = Rebuild(
-        build = build,
-        user = request.user,
+        build=build,
+        user=request.user,
     )
     rebuild.save()
-    
+
     build.status = 'queued'
     if not build.log:
         build.log = ''
-    
+
     build.log += '\n=== Build restarted at {} by {} ===\n'.format(timezone.now(), request.user.username)
     build.current_rebuild = rebuild
     build.save()
 
-    return HttpResponseRedirect('/builds/{}'.format(build.id)) 
+    return HttpResponseRedirect('/builds/{}'.format(build.id))
+
 
 def build_search(request):
     results = []
@@ -117,4 +122,3 @@ def build_search(request):
     }
 
     return render(request, 'build/search.html', context=context)
-    
