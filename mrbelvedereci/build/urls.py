@@ -44,4 +44,9 @@ urlpatterns = [
         views.ApiBuildDetail.as_view(),
         name='ApiBuildDetail',
     ),
+    url(
+        r'^/api/all$',
+        views.ApiBuildList.as_view(),
+        name='ApiBuildList',
+    ),
 ]

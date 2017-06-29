@@ -20,6 +20,11 @@ class ApiBuildDetail(generics.RetrieveAPIView):
     serializer_class = BuildSerializer
 
 
+class ApiBuildList(generics.ListAPIView):
+    queryset = Build.objects.all()
+    serializer_class = BuildSerializer
+
+
 def build_list(request):
     builds = view_queryset(request)
     return render(request, 'build/build_list.html', context={'builds': builds})
