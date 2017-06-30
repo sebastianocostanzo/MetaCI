@@ -70,3 +70,6 @@ staticfiles/
 
 # Virtualenv
 venv
+
+# databases
+*.db
