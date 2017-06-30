@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 from __future__ import absolute_import, unicode_literals
 
 import environ
+import os
 
 ROOT_DIR = environ.Path(__file__) - 3  # (mrbelvedereci/config/settings/common.py - 3 = mrbelvedereci/)
 APPS_DIR = ROOT_DIR.path('mrbelvedereci')
@@ -48,6 +49,7 @@ THIRD_PARTY_APPS = (
     'django_slds_crispyforms',  # SLDS theme for crispyforms
     'rest_framework', # REST API
     'watson', # Full text search
+    'webpack_loader', # webpack
 )
 
 # Apps specific for this project go here.
@@ -189,6 +191,7 @@ STATIC_URL = '/static/'
 # See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#std:setting-STATICFILES_DIRS
 STATICFILES_DIRS = (
     str(APPS_DIR.path('static')),
+    os.path.join(ROOT_DIR(), 'assets'),
 )
 
 # See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#staticfiles-finders
@@ -290,3 +293,10 @@ GITHUB_WEBHOOK_SECRET = None
 CONNECTED_APP_CLIENT_ID = None
 CONNECTED_APP_CLIENT_SECRET = None
 CONNECTED_APP_CALLBACK_URL = None
+
+WEBPACK_LOADER = {
+    'DEFAULT': {
+        'BUNDLE_DIR_NAME': 'bundles/',
+        'STATS_FILE': os.path.join(ROOT_DIR(), 'webpack-stats.json'),
+    }
+}
