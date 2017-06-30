@@ -24,7 +24,7 @@ def paginate(build_list, request):
         builds = paginator.page(paginator.num_pages)
     return builds
 
-def view_queryset(request, query=None):
+def view_queryset(request, query=None, multiple=True):
     if not query:
         query = {}
 
@@ -39,8 +39,8 @@ def view_queryset(request, query=None):
     order_by = request.GET.get('order_by', '-time_queue')
     order_by = order_by.split(',')
     builds = builds.order_by(*order_by)
-
-    builds = paginate(builds, request)
+    if multiple:
+        builds = paginate(builds, request)
     return builds
 
 def format_log(log):
