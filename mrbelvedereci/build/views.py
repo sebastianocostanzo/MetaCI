@@ -16,13 +16,17 @@ from watson import search as watson
 
 
 class ApiBuildDetail(generics.RetrieveAPIView):
-    queryset = Build.objects.all()
     serializer_class = BuildSerializer
+
+    def get_queryset(self):
+        return view_queryset(self.request)
 
 
 class ApiBuildList(generics.ListAPIView):
-    queryset = Build.objects.all()
     serializer_class = BuildSerializer
+
+    def get_queryset(self):
+        return view_queryset(self.request)
 
 
 def build_list(request):
