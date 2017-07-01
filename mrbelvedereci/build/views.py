@@ -19,7 +19,7 @@ class ApiBuildDetail(generics.RetrieveAPIView):
     serializer_class = BuildSerializer
 
     def get_queryset(self):
-        return view_queryset(self.request, multiple=False)
+        return view_queryset(self.request, pagination=False)
 
 
 class ApiBuildList(generics.ListAPIView):
