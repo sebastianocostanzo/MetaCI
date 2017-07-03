@@ -47,8 +47,8 @@ class BuildsList extends React.Component {
   }
 
   render() {
-    if (this.state.data) {
-      var buildNodes = this.state.data.map(function(build) {
+    if (this.state.data.results) {
+      var buildNodes = this.state.data.results.map(function(build) {
         return (
           <tr key={build.id}>
             <th data-label='Build Number'>
