@@ -26,7 +26,8 @@ class ApiBuildList(generics.ListAPIView):
     serializer_class = BuildSerializer
 
     def get_queryset(self):
-        return view_queryset(self.request)
+        # use DRF pagination instead of Django core
+        return view_queryset(self.request, pagination=False)
 
 
 def build_list(request):
