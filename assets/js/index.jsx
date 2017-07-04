@@ -18,14 +18,16 @@ function getSldsClassForStatus(status) {
 class BuildsList extends React.Component {
   constructor(props) {
     super(props)
-    this.state = {data: []}
+    this.state = {
+      data: [],
+      url: props.url
+    }
     this.pollInterval = props.pollInterval
-    this.url = props.url
   }
 
   loadDataFromServer() {
     $.ajax({
-      url: this.url,
+      url: this.state.url,
       datatype: 'json',
       cache: false,
       success: function(data) {
@@ -44,6 +46,14 @@ class BuildsList extends React.Component {
 
   componentWillUnmount() {
     clearInterval(this.timerID)
+  }
+
+  pagePrevious() {
+    this.setState({url: this.state.data.previous})
+  }
+
+  pageNext() {
+    this.setState({url: this.state.data.next})
   }
 
   render() {
@@ -95,40 +105,64 @@ class BuildsList extends React.Component {
         )
       })
     }
+    if (this.state.data.previous) {
+      var pagePrevious = (
+        <button
+          className='slds-button slds-button--neutral'
+          onClick={this.pagePrevious.bind(this)}>
+          Previous
+        </button>
+      )
+    }
+    if (this.state.data.next) {
+      var pageNext = (
+        <button
+          className='slds-button slds-button--neutral'
+          onClick={this.pageNext.bind(this)}>
+          Next
+        </button>
+      )
+    }
     return (
-      <table className='slds-table slds-table--bordered slds-table--cell-buffer'>
-        <thead>
-          <tr className='slds-text-title--caps'>
-            <th scope='col'>
-              <div className='slds-truncate' title=''>#</div>
-            </th>
-            <th scope='col'>
-              <div className='slds-truncate' title=''>Status</div>
-            </th>
-            <th scope='col'>
-              <div className='slds-truncate' title=''>Repo</div>
-            </th>
-            <th scope='col'>
-              <div className='slds-truncate' title=''>Plan</div>
-            </th>
-            <th scope='col'>
-              <div className='slds-truncate' title=''>Branch/Tag</div>
-            </th>
-            <th scope='col'>
-              <div className='slds-truncate' title=''>Commit</div>
-            </th>
-            <th scope='col'>
-              <div className='slds-truncate' title=''>Start Date</div>
-            </th>
-            <th scope='col'>
-              <div className='slds-truncate' title=''>End Date</div>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {buildNodes}
-        </tbody>
-      </table>
+      <div>
+        <table className='slds-table slds-table--bordered slds-table--cell-buffer'>
+          <thead>
+            <tr className='slds-text-title--caps'>
+              <th scope='col'>
+                <div className='slds-truncate' title=''>#</div>
+              </th>
+              <th scope='col'>
+                <div className='slds-truncate' title=''>Status</div>
+              </th>
+              <th scope='col'>
+                <div className='slds-truncate' title=''>Repo</div>
+              </th>
+              <th scope='col'>
+                <div className='slds-truncate' title=''>Plan</div>
+              </th>
+              <th scope='col'>
+                <div className='slds-truncate' title=''>Branch/Tag</div>
+              </th>
+              <th scope='col'>
+                <div className='slds-truncate' title=''>Commit</div>
+              </th>
+              <th scope='col'>
+                <div className='slds-truncate' title=''>Start Date</div>
+              </th>
+              <th scope='col'>
+                <div className='slds-truncate' title=''>End Date</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {buildNodes}
+          </tbody>
+        </table>
+        <div className='slds-button-group slds-m-top--medium' role='group'>
+          {pagePrevious}
+          {pageNext}
+        </div>
+      </div>
     )
   }
 }
