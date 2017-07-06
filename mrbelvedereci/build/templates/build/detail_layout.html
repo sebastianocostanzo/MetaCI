@@ -1,4 +1,5 @@
 {% extends 'layout_full.html' %}
+{% load render_bundle from webpack_loader %}
 
 {% block layout_parent_link %}<a href="/builds">Builds</a>{% endblock %}
 
@@ -28,9 +29,9 @@
   <ul class="slds-grid slds-page-header__detail-row">
     <li class="slds-page-header__detail-block">
       <p class="slds-text-title slds-truncate slds-m-bottom--xx-small" title="Status">Status</p>
-      <p class="slds-text-body--regular slds-truncate" title="{{ build.status }}">
-        <div class="slds-badge {% if build.status == 'fail' or build.status == 'error' %}slds-theme--error{% elif build.status == 'success' %}slds-theme--success{% endif %}">{{ build.status }}</div>
-      </p>
+      <script>var buildId = {{ build.id }}</script>
+      <div id="buildStatus"></div>
+      {% render_bundle 'buildStatus' %}
     </li>
     <li class="slds-page-header__detail-block">
       <p class="slds-text-title slds-truncate slds-m-bottom--xx-small" title="Plan">Plan</p>

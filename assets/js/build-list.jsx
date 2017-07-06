@@ -54,7 +54,7 @@ class BuildsList extends React.Component {
               </div>
             </th>
             <td data-label='Status'>
-              <div className={utils.getClassForStatus(build.status)} title={build.status}>
+              <div className={`slds-truncate slds-badge ${utils.getClassForStatus(build.status)}`} title={build.status}>
                 <a href={`/builds/${build.id}`}>{build.status}</a>
               </div>
             </td>
