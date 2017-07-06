@@ -40,7 +40,7 @@ urlpatterns = [
         name='build_detail',
     ),
     url(
-        r'^/api/(?P<pk>\d+)$',
+        r'^(/\d+)?/api/(?P<pk>\d+)$',
         views.ApiBuildDetail.as_view(),
         name='ApiBuildDetail',
     ),
