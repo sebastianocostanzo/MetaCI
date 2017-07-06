@@ -6,7 +6,10 @@ module.exports = {
 
     context: __dirname,
 
-    entry: './assets/js/index',
+    entry: {
+      buildList: './assets/js/build-list.jsx',
+      buildDetail: './assets/js/build-detail.jsx'
+    },
 
     output: {
         path: path.resolve('./assets/bundles/'),
