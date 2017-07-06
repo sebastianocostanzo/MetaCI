@@ -1,15 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-
-function getClassForStatus(status) {
-  switch(status) {
-    case 'fail':
-    case 'error':
-      return 'slds-truncate slds-badge slds-theme--error'
-    case 'success':
-      return 'slds-truncate slds-badge slds-theme--success'
-  }
-}
+import * as utils from './utils.js'
 
 class BuildsList extends React.Component {
   constructor(props) {
@@ -63,7 +54,7 @@ class BuildsList extends React.Component {
               </div>
             </th>
             <td data-label='Status'>
-              <div className={getClassForStatus(build.status)} title={build.status}>
+              <div className={utils.getClassForStatus(build.status)} title={build.status}>
                 <a href={`/builds/${build.id}`}>{build.status}</a>
               </div>
             </td>
