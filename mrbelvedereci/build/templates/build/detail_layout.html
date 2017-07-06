@@ -14,15 +14,14 @@
 {% endblock %}
 
 {% block layout_header_buttons %}
-{% if request.user.is_staff and build.status != 'success' %}
-<div class="slds-button-group" role="group">
-  <a href="{{ build.get_absolute_url }}/rebuild">
-    <button class="slds-button slds-button--neutral">
-      Rebuild
-    </button>
-  </a>
-</div>
+<script>var buildId = {{ build.id }}</script>
+{% if request.user.is_staff %}
+  <script>var isStaff = true</script>
+{% else %}
+  <script>var isStaff = false</script>
 {% endif %}
+<div id="buildRebuild"></div>
+{% render_bundle 'buildRebuild' %}
 {% endblock %}
 
 {% block layout_header_details %}

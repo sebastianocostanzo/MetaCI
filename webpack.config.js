@@ -8,6 +8,7 @@ module.exports = {
 
     entry: {
       buildList: './assets/js/build-list.jsx',
+      buildRebuild: './assets/js/build-rebuild.jsx',
       buildStatus: './assets/js/build-status.jsx',
       buildDetail: './assets/js/build-detail.jsx'
     },
