@@ -31,7 +31,7 @@ class BuildRebuild extends React.Component {
   }
 
   render() {
-    if (isStaff && this.state.build && ['error', 'fail'].includes(this.state.build.status)) {
+    if (this.state.build && ['error', 'fail'].includes(this.state.build.status)) {
       return (
         <div className='slds-button-group' role='group'>
           <a href={`/builds/${this.props.buildId}/rebuild`}>

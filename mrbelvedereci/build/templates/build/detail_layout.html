@@ -14,14 +14,11 @@
 {% endblock %}
 
 {% block layout_header_buttons %}
-<script>var buildId = {{ build.id }}</script>
 {% if request.user.is_staff %}
-  <script>var isStaff = true</script>
-{% else %}
-  <script>var isStaff = false</script>
+  <script>var buildId = {{ build.id }}</script>
+  <div id="buildRebuild"></div>
+  {% render_bundle 'buildRebuild' %}
 {% endif %}
-<div id="buildRebuild"></div>
-{% render_bundle 'buildRebuild' %}
 {% endblock %}
 
 {% block layout_header_details %}
