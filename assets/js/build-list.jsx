@@ -1,25 +1,21 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-function getSldsClassForStatus(status) {
-  var s = 'slds-truncate slds-badge '
+function getClassForStatus(status) {
   switch(status) {
     case 'fail':
     case 'error':
-      s += 'slds-theme--error'
-      break
+      return 'slds-truncate slds-badge slds-theme--error'
     case 'success':
-      s += 'slds-theme--success'
-      break
+      return 'slds-truncate slds-badge slds-theme--success'
   }
-  return s
 }
 
 class BuildsList extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      data: [],
+      builds: null,
       url: props.url
     }
     this.pollInterval = props.pollInterval
@@ -31,7 +27,7 @@ class BuildsList extends React.Component {
       datatype: 'json',
       cache: false,
       success: function(data) {
-        this.setState({data: data})
+        this.setState({builds: data})
       }.bind(this)
     })
   }
@@ -49,16 +45,16 @@ class BuildsList extends React.Component {
   }
 
   pagePrevious() {
-    this.setState({url: this.state.data.previous})
+    this.setState({url: this.state.builds.previous})
   }
 
   pageNext() {
-    this.setState({url: this.state.data.next})
+    this.setState({url: this.state.builds.next})
   }
 
   render() {
-    if (this.state.data.results) {
-      var buildNodes = this.state.data.results.map(function(build) {
+    if (this.state.builds) {
+      var buildNodes = this.state.builds.results.map(function(build) {
         return (
           <tr key={build.id}>
             <th data-label='Build Number'>
@@ -67,7 +63,7 @@ class BuildsList extends React.Component {
               </div>
             </th>
             <td data-label='Status'>
-              <div className={getSldsClassForStatus(build.status)} title={build.status}>
+              <div className={getClassForStatus(build.status)} title={build.status}>
                 <a href={`/builds/${build.id}`}>{build.status}</a>
               </div>
             </td>
@@ -104,24 +100,32 @@ class BuildsList extends React.Component {
           </tr>
         )
       })
-    }
-    if (this.state.data.previous) {
-      var pagePrevious = (
-        <button
-          className='slds-button slds-button--neutral'
-          onClick={this.pagePrevious.bind(this)}>
-          Previous
-        </button>
-      )
-    }
-    if (this.state.data.next) {
-      var pageNext = (
-        <button
-          className='slds-button slds-button--neutral'
-          onClick={this.pageNext.bind(this)}>
-          Next
-        </button>
-      )
+      if (this.state.builds.previous || this.state.builds.next) {
+        if (this.state.builds.previous) {
+          var pagePrevious = (
+            <button
+              className='slds-button slds-button--neutral'
+              onClick={this.pagePrevious.bind(this)}>
+              Previous
+            </button>
+          )
+        }
+        if (this.state.builds.next) {
+          var pageNext = (
+            <button
+              className='slds-button slds-button--neutral'
+              onClick={this.pageNext.bind(this)}>
+              Next
+            </button>
+          )
+        }
+        var pageButtons = (
+          <div className='slds-button-group slds-m-top--medium' role='group'>
+            {pagePrevious}
+            {pageNext}
+          </div>
+        )
+      }
     }
     return (
       <div>
@@ -158,10 +162,7 @@ class BuildsList extends React.Component {
             {buildNodes}
           </tbody>
         </table>
-        <div className='slds-button-group slds-m-top--medium' role='group'>
-          {pagePrevious}
-          {pageNext}
-        </div>
+        {pageButtons}
       </div>
     )
   }

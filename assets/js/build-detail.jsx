@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom'
 class BuildDetail extends React.Component {
   constructor() {
     super()
-    this.state = {data: {}}
+    this.state = {build: null}
   }
 
   loadDataFromServer() {
@@ -14,7 +14,7 @@ class BuildDetail extends React.Component {
       datatype: 'json',
       cache: false,
       success: function(data) {
-        this.setState({data: data})
+        this.setState({build: data})
       }.bind(this)
     })
   }
@@ -32,23 +32,25 @@ class BuildDetail extends React.Component {
   }
 
   render() {
-    if (this.state.data) {
-      if (['error', 'fail'].includes(this.state.data.status)) {
+    if (this.state.build) {
+      if (['error', 'fail'].includes(this.state.build.status)) {
         var buildErrorMessage = (
           <div className='slds-box slds-theme--warning slds-m-bottom--large'>
-            <h3 className='slds-text-heading--large'>
-              Build Exception: {this.state.data.exception}
-            </h3>
-            <p>{this.state.data.error_message}</p>
+            <div className='slds-text-heading--large'>
+              Build Exception: {this.state.build.exception}
+            </div>
+            <div className='slds-text-body--regular'>
+              {this.state.build.error_message}
+            </div>
           </div>
         )
       }
       var buildLog = (
         <div className='slds-box'>
-          <h3 className='slds-text-heading--large sldes-m-bottom--medium'>
+          <div className='slds-text-heading--large sldes-m-bottom--medium'>
             Build Log
-          </h3>
-          {this.state.data.log}
+          </div>
+          {this.state.build.log}
         </div>
       )
     }
