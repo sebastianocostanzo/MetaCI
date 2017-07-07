@@ -16,6 +16,16 @@ from serializers import RebuildSerializer
 from watson import search as watson
 
 
+def get_rebuild_queryset(request):
+    rebuilds = Rebuild.objects.all()
+    if not request.user.is_staff:
+        rebuilds = rebuilds.filter(build__plan__public=True)
+    order_by = request.GET.get('order_by', '-time_queue')
+    order_by = order_by.split(',')
+    rebuilds = rebuilds.order_by(*order_by)
+    return rebuilds
+
+
 class ApiBuildDetail(generics.RetrieveAPIView):
     serializer_class = BuildSerializer
 
@@ -31,20 +41,18 @@ class ApiBuildList(generics.ListAPIView):
         return view_queryset(self.request, pagination=False)
 
 
+class ApiRebuildDetail(generics.RetrieveAPIView):
+    serializer_class = RebuildSerializer
+
+    def get_queryset(self):
+        return get_rebuild_queryset(self.request)
+
+
 class ApiRebuildList(generics.ListAPIView):
     serializer_class = RebuildSerializer
 
     def get_queryset(self):
-        rebuilds = Rebuild.objects.all()
-        query = {}
-        if not self.request.user.is_staff:
-            query['build__plan__public'] = True
-        if query:
-            rebuilds = rebuilds.filter(**query)
-        order_by = self.request.GET.get('order_by', '-time_queue')
-        order_by = order_by.split(',')
-        rebuilds = rebuilds.order_by(*order_by)
-        return rebuilds
+        return get_rebuild_queryset(self.request)
 
 
 def build_list(request):

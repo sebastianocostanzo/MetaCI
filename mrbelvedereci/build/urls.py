@@ -45,6 +45,11 @@ urlpatterns = [
         name='ApiBuildDetail',
     ),
     url(
+        r'^/api/rebuilds/(?P<pk>\d+)$',
+        views.ApiRebuildDetail.as_view(),
+        name='ApiRebuildDetail',
+    ),
+    url(
         r'^(/\d+)?(/\w+)?/api/(?P<build_id>\d+)/log$',
         views.build_log,
         name='build_log',
