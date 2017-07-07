@@ -54,4 +54,9 @@ urlpatterns = [
         views.ApiBuildList.as_view(),
         name='ApiBuildList',
     ),
+    url(
+        r'^/(?P<build_id>\d+)/rebuilds/api/all$',
+        views.ApiRebuildList.as_view(),
+        name='ApiRebuildList',
+    ),
 ]

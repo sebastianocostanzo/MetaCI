@@ -12,6 +12,7 @@ from mrbelvedereci.build.models import Rebuild
 from mrbelvedereci.build.tasks import run_build
 from mrbelvedereci.build.utils import view_queryset
 from serializers import BuildSerializer
+from serializers import RebuildSerializer
 from watson import search as watson
 
 
@@ -28,6 +29,20 @@ class ApiBuildList(generics.ListAPIView):
     def get_queryset(self):
         # use DRF pagination instead of Django core
         return view_queryset(self.request, pagination=False)
+
+
+class ApiRebuildList(generics.ListAPIView):
+    serializer_class = RebuildSerializer
+
+    def get_queryset(self):
+        build = get_object_or_404(Build, id=self.kwargs['build_id'])
+        if not self.request.user.is_staff and not build.plan.public:
+            return HttpResponseForbidden('You are not authorized to view this build')
+        rebuilds = Rebuild.objects.all()
+        order_by = self.request.GET.get('order_by', '-time_queue')
+        order_by = order_by.split(',')
+        rebuilds = rebuilds.order_by(*order_by)
+        return rebuilds
 
 
 def build_list(request):
