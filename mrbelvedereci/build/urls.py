@@ -40,12 +40,12 @@ urlpatterns = [
         name='build_detail',
     ),
     url(
-        r'^(/\d+)?/api/(?P<pk>\d+)$',
+        r'^(/\d+)?(/\w+)?/api/(?P<pk>\d+)$',
         views.ApiBuildDetail.as_view(),
         name='ApiBuildDetail',
     ),
     url(
-        r'^/api/(?P<build_id>\d+)/log$',
+        r'^(/\d+)?(/\w+)?/api/(?P<build_id>\d+)/log$',
         views.build_log,
         name='build_log',
     ),
