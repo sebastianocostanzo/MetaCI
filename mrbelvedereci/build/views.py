@@ -35,10 +35,12 @@ class ApiRebuildList(generics.ListAPIView):
     serializer_class = RebuildSerializer
 
     def get_queryset(self):
-        build = get_object_or_404(Build, id=self.kwargs['build_id'])
-        if not self.request.user.is_staff and not build.plan.public:
-            return HttpResponseForbidden('You are not authorized to view this build')
         rebuilds = Rebuild.objects.all()
+        query = {}
+        if not self.request.user.is_staff:
+            query['build__plan__public'] = True
+        if query:
+            rebuilds = rebuilds.filter(**query)
         order_by = self.request.GET.get('order_by', '-time_queue')
         order_by = order_by.split(',')
         rebuilds = rebuilds.order_by(*order_by)
