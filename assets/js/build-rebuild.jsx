@@ -9,7 +9,7 @@ class BuildRebuild extends React.Component {
 
   loadDataFromServer() {
     $.ajax({
-      url: `api/${this.props.buildId}?format=json`,
+      url: `/builds/api/${this.props.buildId}?format=json`,
       datatype: 'json',
       cache: false,
       success: function(data) {
