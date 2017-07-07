@@ -132,3 +132,10 @@ def build_search(request):
     }
 
     return render(request, 'build/search.html', context=context)
+
+
+def build_log(request, build_id=None):
+    build = get_object_or_404(Build, id=build_id)
+    if not request.user.is_staff and not build.plan.public:
+        return HttpResponseForbidden('You are not authorized to view this build')
+    return render(request, 'build/build_log.html', context={'build': build})

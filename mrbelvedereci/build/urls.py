@@ -45,6 +45,11 @@ urlpatterns = [
         name='ApiBuildDetail',
     ),
     url(
+        r'^/api/(?P<build_id>\d+)/log$',
+        views.build_log,
+        name='build_log',
+    ),
+    url(
         r'^/api/all$',
         views.ApiBuildList.as_view(),
         name='ApiBuildList',
