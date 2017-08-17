@@ -4,6 +4,13 @@
 <div class="slds-box slds-m-bottom--large {% if tests.fail %}slds-theme--warning{% else %}slds-theme--success{% endif %}">
   <h3 class="slds-text-heading--large">{{ tests.pass }} of {{ tests.total }} tests passed</h3>
 </div>
+
+{% for name, suite in suite_results.items %}
+<div class="slds-box slds-m-bottom--large">
+  <h5 class="slds-text-heading--large">{{ name }} - {{ suite.pass }} of {{ suite.total }}</h5>
+</div>
+{% endfor %}
+
 {% if tests.fail %}
 <div class="slds-card slds-m-bottom--large">
   <div class="slds-card__header slds-grid">

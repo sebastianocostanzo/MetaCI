@@ -7,8 +7,12 @@ from django.shortcuts import render
 from django.utils import timezone
 from watson import search as watson
 
+from django.db.models import Count, Case, When, Sum
+from django.db import models
+
 from mrbelvedereci.build.exceptions import BuildError
 from mrbelvedereci.build.models import Build
+from mrbelvedereci.testresults.models import TestResult
 from mrbelvedereci.build.models import Rebuild
 from mrbelvedereci.build.tasks import run_build
 from mrbelvedereci.build.utils import view_queryset
@@ -53,6 +57,38 @@ def build_detail(request, build_id, rebuild_id=None, tab=None):
 
     flows = flows.order_by('time_queue')
 
+    # suites that should be in this build
+    suites = build.plan.test_suites.prefetch_related('testclass_set','testclass_set__methods')
+    suite_results = {}
+    
+    for suite in suites.all():
+        stats = TestResult.objects.filter(
+            build_flow__in=build.flows.values('id'), 
+            method__testclass__test_suites = suite.id
+        ).aggregate(
+            total=Count('id'), 
+            num_pass=Sum(
+                Case(
+                    When(outcome='Pass'),
+                    default=0,
+                    output_field=models.IntegerField()
+                )
+            ),
+            num_fail=Sum(
+                Case(
+                    When(outcome='Fail'),
+                    default=0,
+                    output_field=models.IntegerField()
+                )
+            )
+        )
+        suite_results[suite.name] = {
+            'total': stats['total'],
+            'pass': stats['num_pass'],
+            'fail': stats['num_fail'],
+            'obj': suite
+        }
+
     tests = {
         'total': 0,
         'pass': 0,
@@ -82,6 +118,7 @@ def build_detail(request, build_id, rebuild_id=None, tab=None):
         'flows': flows,
         'tests': tests,
         'org_instance': org_instance,
+        'suite_results': suite_results
     }
 
     if not tab:
