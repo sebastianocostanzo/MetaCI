@@ -27,7 +27,10 @@ class TestMethod(models.Model):
     def __unicode__(self):
         return self.name
 
-
+class TestSuite(models.Model):
+    name = models.CharField(max_length=255, db_index=True)
+    repo = models.ForeignKey('repository.Repository', related_name='testsuites')
+    test_classes = models.ManyToManyField(TestClass)
 
 class TestResultManager(models.Manager):
     def update_summary_fields(self):
