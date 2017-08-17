@@ -12,6 +12,13 @@ class TestSuite(models.Model):
     repo = models.ForeignKey('repository.Repository', related_name='testsuites')
     kind = models.CharField(max_length=15, choices=TEST_KIND)
 
+    class Meta:
+        verbose_name = 'Test Suite'
+        verbose_name_plural = 'Test Suites'
+
+    def __unicode__(self):
+        return self.name
+
 class TestClass(models.Model):
     name = models.CharField(max_length=255, db_index=True)
     repo = models.ForeignKey('repository.Repository', related_name='testclasses')
@@ -34,7 +41,6 @@ class TestMethod(models.Model):
 
     def __unicode__(self):
         return self.name
-
 
 class TestResultManager(models.Manager):
     def update_summary_fields(self):
