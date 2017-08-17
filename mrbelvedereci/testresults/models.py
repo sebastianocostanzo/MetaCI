@@ -5,10 +5,19 @@ from collections import OrderedDict
 from django.db import models
 from django import forms
 from mrbelvedereci.testresults.choices import OUTCOME_CHOICES
+from mrbelvedereci.testresults.choices import TEST_KIND
+
+class TestSuite(models.Model):
+    name = models.CharField(max_length=255, db_index=True)
+    repo = models.ForeignKey('repository.Repository', related_name='testsuites')
+    kind = models.CharField(max_length=15, choices=TEST_KIND)
 
 class TestClass(models.Model):
     name = models.CharField(max_length=255, db_index=True)
     repo = models.ForeignKey('repository.Repository', related_name='testclasses')
+    test_suites = models.ManyToManyField(TestSuite)
+    kind = models.CharField(max_length=15, choices=TEST_KIND)
+
     
     class Meta:
         verbose_name = 'Test Class'
@@ -27,10 +36,6 @@ class TestMethod(models.Model):
     def __unicode__(self):
         return self.name
 
-class TestSuite(models.Model):
-    name = models.CharField(max_length=255, db_index=True)
-    repo = models.ForeignKey('repository.Repository', related_name='testsuites')
-    test_classes = models.ManyToManyField(TestClass)
 
 class TestResultManager(models.Manager):
     def update_summary_fields(self):
