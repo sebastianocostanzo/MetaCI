@@ -349,6 +349,7 @@ class BuildFlow(models.Model):
     tests_total = models.IntegerField(null=True, blank=True)
     tests_pass = models.IntegerField(null=True, blank=True)
     tests_fail = models.IntegerField(null=True, blank=True)
+    test_suites = models.ManyToManyField('testresults.TestSuite')
 
     def __unicode__(self):
         return '{}: {} - {} - {}'.format(self.build.id, self.build.repo,

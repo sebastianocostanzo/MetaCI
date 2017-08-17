@@ -17,7 +17,6 @@ class TestClass(models.Model):
     repo = models.ForeignKey('repository.Repository', related_name='testclasses')
     test_suites = models.ManyToManyField(TestSuite)
     kind = models.CharField(max_length=15, choices=TEST_KIND)
-
     
     class Meta:
         verbose_name = 'Test Class'
