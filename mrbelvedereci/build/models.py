@@ -485,6 +485,8 @@ class BuildFlow(models.Model):
                 },
                 'SourceFile': filename,
             }
+            if 'name' in testsuite.attrib:
+                result['TestSuiteName'] = testsuite.attrib['name']
             for element in testcase.iter():
                 if element.tag not in ['failure', 'error']:
                     continue

@@ -93,8 +93,8 @@ class TestResult(models.Model):
     stacktrace = models.TextField(null=True, blank=True)
     message = models.TextField(null=True, blank=True)
     source_file = models.CharField(max_length=255)
-    
-    # Apex Limits Statistics 
+
+    # Apex Limits Statistics
     test_email_invocations_used = models.IntegerField(null=True, blank=True, db_index=True)
     test_email_invocations_allowed = models.IntegerField(null=True, blank=True, db_index=True)
     test_email_invocations_percent = models.IntegerField(null=True, blank=True, db_index=True)

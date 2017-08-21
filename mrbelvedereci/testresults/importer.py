@@ -3,6 +3,7 @@ import json
 from mrbelvedereci.testresults.models import TestClass
 from mrbelvedereci.testresults.models import TestMethod
 from mrbelvedereci.testresults.models import TestResult
+from mrbelvedereci.testresults.models import TestSuiteRun
 
 STATS_MAP = {
     'email_invocations': 'Number of Email Invocations',
@@ -50,6 +51,7 @@ LIMIT_TYPES = (
 def import_test_results(build_flow, results):
     classes = {}
     methods = {}
+    suites = {}
 
     for result in results:
         class_and_method = '%s.%s' % (result['ClassName'], result['Method'])
@@ -72,6 +74,18 @@ def import_test_results(build_flow, results):
                 method.save()
             methods[result['Method']] = method
 
+        suite = suites.get(result['TestSuiteName'])
+        if (not suite) and result['TestSuiteName']:
+            try:
+                suite = TestSuiteRun.objects.get(suite_name = result['TestSuiteName'], build_flow=build_flow)
+            except TestSuiteRun.DoesNotExist:
+                suite = TestSuiteRun(
+                    suite_name = result['TestSuiteName'], 
+                    build_flow = build_flow
+                )
+                suite.save()
+            suites[result['TestSuiteName']] = suite
+
         duration = None
         if 'Stats' in result and result['Stats'] and 'duration' in result['Stats'] and result['Stats']['duration']:
             duration = result['Stats']['duration']
@@ -85,6 +99,8 @@ def import_test_results(build_flow, results):
             message = result['Message'],
             source_file = result['SourceFile']
         )
+        if result['TestSuiteName']:
+            testresult.test_suite_run = suite
         populate_limit_fields(testresult, result['Stats'])
         testresult.save()
 
