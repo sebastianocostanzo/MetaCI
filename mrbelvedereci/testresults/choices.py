@@ -5,3 +5,8 @@ OUTCOME_CHOICES = (
     ('Skip', 'Skip'),
 )
 
+TEST_SUITE_KINDS = (
+    ('apex', 'Apex'),
+    ('browser', 'Browser'),
+    ('other', 'Other')
+)

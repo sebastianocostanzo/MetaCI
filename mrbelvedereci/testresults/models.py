@@ -1,21 +1,21 @@
 from __future__ import unicode_literals
 
-import dateutil.parser
 from collections import OrderedDict
 from django.db import models
-from django import forms
-from mrbelvedereci.testresults.choices import OUTCOME_CHOICES
+from mrbelvedereci.testresults.choices import OUTCOME_CHOICES, TEST_SUITE_KINDS
+
 
 class TestClass(models.Model):
     name = models.CharField(max_length=255, db_index=True)
     repo = models.ForeignKey('repository.Repository', related_name='testclasses')
-    
+
     class Meta:
         verbose_name = 'Test Class'
         verbose_name_plural = 'Test Classes'
 
     def __unicode__(self):
         return self.name
+
 
 class TestMethod(models.Model):
     name = models.CharField(max_length=255, db_index=True)
@@ -28,6 +28,13 @@ class TestMethod(models.Model):
         return self.name
 
 
+class TestSuiteRun(models.Model):
+    suite_name = models.CharField(max_length=255, db_index=True)
+    build_flow = models.ForeignKey('build.BuildFlow', related_name='test_suite_runs')
+    kind = models.CharField(max_length=25, choices = TEST_SUITE_KINDS, default='Other')
+    tests_total = models.IntegerField(null=True, blank=True)
+    tests_pass = models.IntegerField(null=True, blank=True)
+    tests_fail = models.IntegerField(null=True, blank=True)
 
 class TestResultManager(models.Manager):
     def update_summary_fields(self):
@@ -35,29 +42,29 @@ class TestResultManager(models.Manager):
             summary.update_summary_fields()
 
     def compare_results(self, build_flows):
-    
+
         results = OrderedDict()
         for build_flow in build_flows:
             for result in build_flow.test_results.all():
                 cls = result.method.testclass.name
                 method = result.method.name
-        
+
                 if not cls in results:
                     results[cls] = OrderedDict()
-    
+
                 if not method in results[cls]:
                     results[cls][method] = {}
-    
+
                 for limit in result.get_limit_types():
-                    test_limit = 'test_{}_used'.format( limit )
-    
+                    test_limit = 'test_{}_used'.format(limit)
+
                     if test_limit not in results[cls][method]:
                         results[cls][method][test_limit] = OrderedDict()
-    
+
                     results[cls][method][test_limit][build_flow.id] = getattr(result, test_limit)
-    
+
         diff = OrderedDict()
-    
+
         for cls, methods in results.items():
             for method, limits in methods.items():
                 for limit, build_flows in limits.items():
@@ -65,19 +72,21 @@ class TestResultManager(models.Manager):
                     if len(set(build_flows.values())) > 1:
                         if not cls in diff:
                             diff[cls] = OrderedDict()
-    
+
                         if not method in diff[cls]:
                             diff[cls][method] = {}
-    
+
                         if limit not in diff[cls][method]:
                             diff[cls][method][limit] = OrderedDict()
-    
+
                         diff[cls][method][limit] = build_flows
-    
+
         return diff
+
 
 class TestResult(models.Model):
     build_flow = models.ForeignKey('build.BuildFlow', related_name='test_results')
+    test_suite_run = models.ForeignKey(TestSuiteRun, related_name='test_results', null=True)
     method = models.ForeignKey(TestMethod, related_name='test_results')
     duration = models.FloatField(null=True, blank=True, db_index=True)
     outcome = models.CharField(max_length=16, choices=OUTCOME_CHOICES, db_index=True)
