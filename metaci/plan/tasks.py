@@ -39,6 +39,7 @@ def run_scheduled_hourly():
 @django_rq.job('short')
 def create_github_webhook(pk):
     """Create a webhook if it doesn't exist yet."""
+    reset_database_connection()
     plan_repo = PlanRepository.objects.get(pk=pk)
     event = 'pull_request' if plan_repo.plan.type == 'pr' else 'push'
     callback_url = urljoin(settings.GITHUB_WEBHOOK_BASE_URL, event)
