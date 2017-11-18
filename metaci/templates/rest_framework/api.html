@@ -1,0 +1,138 @@
+{% extends 'rest_framework/slds_base.html' %}
+{% load rest_framework %}
+
+{% block layout_header_buttons %}
+    {% if filter_form %}
+        <button class="slds-button slds-button--icon-border-filled" onclick="showFilters();">
+            {% autoescape off %}                
+            <svg aria-hidden="true" class="slds-button__icon">
+                <use xlink:href="/static/slds/assets/icons/utility-sprite/svg/symbols.svg#filterList"></use>
+            </svg>
+            {% endautoescape %}    
+        </button>
+    {% endif %}
+
+    {% if options_form %}
+    <form action="{{ request.get_full_path }}" data-method="OPTIONS">
+      <button class="slds-button slds-button--neutral">OPTIONS</button>
+    </form>
+    {% endif %}
+
+    {% if delete_form %}
+        <button class="slds-button slds-button--destructive" onclick="showDelete();">DELETE</button>
+    {% endif %}
+
+    {% if 'GET' in allowed_methods %}
+        <form action="{{ request.get_full_path }}" data-method="GET">    
+            {% if api_settings.URL_FORMAT_OVERRIDE %}
+            <button class="slds-button slds-button--neutral">
+                GET
+            </button>
+            <div class="slds-dropdown-trigger slds-dropdown-trigger--click slds-button--last slds-is-open">
+                <button class="slds-button slds-button--neutral" aria-haspopup="true">
+                    {% autoescape off %}
+                    <svg class="slds-button__icon" aria-hidden="true">
+                        <use xlink:href="/static/slds/assets/icons/utility-sprite/svg/symbols.svg#down"></use>
+                    </svg>
+                    {% endautoescape %}
+                </button>
+                <div class="slds-dropdown slds-dropdown--right">
+                    <ul class="dropdown__list" role="menu">
+                        {% for format in available_formats %}
+                        <li class="slds-dropdown__item" role="presentation">
+                            <a role="menuitem" href="{% add_query_param request api_settings.URL_FORMAT_OVERRIDE format %}" rel="nofollow">{{ format }}</a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            {% else %}
+            <a href="{{ request.get_full_path }}" rel="nofollow" title="Make a GET request on the {{ name }} resource">
+                <button class="slds-button slds-button--neutral ">
+                    GET
+                </button>
+            </a>
+            {% endif %}
+        </form>
+    {% endif %}
+{% endblock %}
+
+{% block layout_header_details %}
+  <ul class="slds-grid slds-page-header__detail-row">
+        <li class="slds-page-header__detail-block">
+          <p class="slds-text-title slds-truncate slds-m-bottom--xx-small" title="Method">Method</p>
+          <pre class="slds-text-body--regular slds-truncate" title="{{request.method}}">
+            {{request.method}}
+          </pre>
+        </li>
+        <li class="slds-page-header__detail-block" style="max-width: 75%;">
+            <p class="slds-text-title slds-truncate slds-m-bottom--xx-small" title="Path">Path</p>
+            <pre class="slds-text-body--small slds-truncate" title="{{ request.get_full_path }}">
+                {{request.get_full_path}}
+            </pre>
+        </li>
+      </ul>
+{% endblock %}
+
+{% block base_body %}
+<div class="slds-grid">
+    <div class="slds-col slds-size--1-of-1 slds-p-around--medium">
+        {% block layout_body %}
+        <div class="slds-box">
+            {% if messages %} 
+                {% for message in messages %}
+                    <div class="slds-notification {% if message.tags %}alert-{{ message.tags }}{% endif %}">{{ message }}</div>
+                {% endfor %} 
+            {% endif %}   
+            {% block content %}
+                <pre class="slds-m-around--none"><span><b>HTTP {{ response.status_code }} {{ response.status_text }}</b></pre><span>
+                <div class="slds-list--horizontal slds-wrap">
+                {% for key, val in response_headers|items %} 
+                    <pre class="slds-item--label slds-text-color--weak slds-truncate slds-m-around--none">{{key}}</pre>
+                    <pre class="slds-item--detail slds-truncate slds-m-around--none">{{ val|break_long_headers|urlize_quoted_links }}</pre>
+                {% endfor %}
+                </div> 
+                {% autoescape off %}
+                <pre class="prettify">{{ content.strip|urlize_quoted_links }}</pre>    
+                {% endautoescape %}       
+            {% endblock content %}
+        </div>
+        {% endblock %}
+    </div>
+</div>
+
+{% if filter_form %}
+    {{ filter_form }}
+{% endif %}
+
+{% if delete_form %}
+<div id="deleteModal" role="dialog" tabindex="-1" class="slds-modal">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header">
+                <button class="slds-button slds-modal__close slds-button--icon-inverse" onclick="hideDelete();">
+                {% autoescape off %}
+                    <svg class="slds-button__icon slds-button__icon--large" aria-hidden="true">
+                        <use xlink:href="/static/slds/assets/icons/utility-sprite/svg/symbols.svg#close"></use>
+                    </svg>
+                {% endautoescape %}
+                <span class="slds-assistive-text">Close</span>
+                </button>
+                <h2 class="slds-text-heading--medium">Delete</h2>
+            </div>
+            <div class="slds-modal__content slds-p-around--medium">
+                <div>
+                        Are you sure you want to delete this {{ name }}?
+                </div>
+            </div>
+            <div class="slds-modal__footer">
+                    <form action="{{ request.get_full_path }}" data-method="DELETE">
+                            <button class="slds-button slds-button--destructive slds-button--brand">Delete</button>
+                    </form>
+            </div>              
+        </div>
+    </div>
+<div id="deleteBackdrop" class="slds-backdrop"></div>
+
+{% endif %}
+{% endblock %}
+
